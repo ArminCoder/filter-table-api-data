@@ -14,7 +14,7 @@
   </head>
   <style>
     #ndata {
-      color: red;
+      color: black;
       text-align: center;
       font-size: 25px;
       font-weight: 900;
@@ -29,14 +29,13 @@
           id="myInput"
           type="text"
           class="form-control"
-          placeholder="Search for data in table"
+          placeholder="Search in table by title"
         />
         <div class="input-group-append">
           <button
             class="btn btn-dark btn-outline-secondary"
             type="button"
-            id="searchBut"
-            onclick="showFilteredPostsAndDeleteTableContent()"
+            id="searchButt"
           >
             Search
           </button>
@@ -57,6 +56,7 @@
       <p id="ndata">no data</p>
     </div>
     <script>
+      const inputEl = document.getElementById("myInput");
       function deleteTableContent() {
         document.getElementById("myTable").innerHTML = "";
       }
@@ -80,7 +80,7 @@
       }
       function showPosts() {
         document.addEventListener("DOMContentLoaded", async () => {
-          let posts = [];
+          let posts;
           try {
             posts = await getPosts();
             posts.forEach(writePosts);
@@ -90,24 +90,33 @@
         });
       }
       showPosts();
-      function showFilteredPostsAndDeleteTableContent() {
+      function showFilteredPosts() {
         deleteTableContent();
-        let dataToFilter;
+        let postsToFilter;
         fetch("https://jsonplaceholder.typicode.com/posts")
-          .then((response) => response.text())
-          .then((result) => {
-            dataToFilter = JSON.parse(result);
-            function checkForContent() {
-              const inputValue = document.getElementById("myInput").value;
-              // logika za filtriranje array-a
+          .then((response) => response.json())
+          .then((data) => {
+            postsToFilter = data;
+            const inputValue = document
+              .getElementById("myInput")
+              .value.toLocaleLowerCase();
+            function filterPosts(currentValue, index, arr) {
+              if (arr[index].title.indexOf(inputValue) > -1) return arr[index];
             }
-            const filteredPostsToPrint = dataToFilter.filter(
-              chechForContent(dataToFilter)
-            );
-            filteredPostsToPrint.forEach(writePosts);
+            const filteredPosts = postsToFilter.filter(filterPosts);
+            filteredPosts.forEach(writePosts);
           })
           .catch(showFailMessage);
       }
+      document
+        .getElementById("searchButt")
+        .addEventListener("click", showFilteredPosts);
+      inputEl.addEventListener("keyup", function (e) {
+        e.preventDefault;
+        if (inputEl.value === "") {
+          deleteTableContent() && showPosts();
+        }
+      });
     </script>
   </body>
 </html>
