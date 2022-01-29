@@ -111,8 +111,7 @@
       document
         .getElementById("searchButt")
         .addEventListener("click", showFilteredPosts);
-      inputEl.addEventListener("keyup", function (e) {
-        e.preventDefault;
+      inputEl.addEventListener("keyup", function () {
         if (inputEl.value === "") {
           deleteTableContent();
           fetch("https://jsonplaceholder.typicode.com/posts")
